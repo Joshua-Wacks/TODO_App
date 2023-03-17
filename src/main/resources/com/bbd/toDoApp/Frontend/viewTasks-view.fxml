@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+
+
+<AnchorPane fx:id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="568.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Pane id="categoryPane" fx:id="categoriesPane" prefHeight="568.0" prefWidth="229.0" style="-fx-background-color: blue;">
+         <children>
+            <TextArea fx:id="categoriesHdrtxA" editable="false" prefHeight="107.0" prefWidth="229.0" text="Categories" />
+         </children>
+      </Pane>
+      <Pane fx:id="infoPane" layoutX="229.0" prefHeight="136.0" prefWidth="573.0" style="-fx-background-color: green;">
+         <children>
+            <TextArea fx:id="userInfoHdrtxA" prefHeight="107.0" prefWidth="573.0" text="User Info" />
+         </children>
+      </Pane>
+      <TableView fx:id="tasksTbl" layoutX="229.0" layoutY="136.0" prefHeight="432.0" prefWidth="573.0">
+         <columns>
+            <TableColumn fx:id="categoryClm" editable="false" prefWidth="96.0" text="Category" />
+            <TableColumn fx:id="createdClm" editable="false" prefWidth="96.0" text="Created" />
+            <TableColumn fx:id="dueClm" editable="false" prefWidth="96.0" text="Due" />
+            <TableColumn fx:id="titleClm" editable="false" prefWidth="96.0" text="Title" />
+            <TableColumn fx:id="descriptionClm" editable="false" prefWidth="96.0" text="Description" />
+            <TableColumn fx:id="completedClm" editable="false" prefWidth="96.0" text="Completed" />
+         </columns>
+      </TableView>
+   </children>
+</AnchorPane>
