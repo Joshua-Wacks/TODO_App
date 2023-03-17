@@ -8,6 +8,6 @@ module com.example.firstjavafxproject {
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.bootstrapfx.core;
 
-    opens com.example.firstjavafxproject to javafx.fxml;
-    exports com.example.firstjavafxproject;
+    opens com.bbd.toDoApp.Frontend to javafx.fxml;
+    exports com.bbd.toDoApp.Frontend;
 }
