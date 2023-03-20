@@ -4,7 +4,6 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -42,16 +41,7 @@
             </MenuBar>
          </children>
       </Pane>
-      <TableView fx:id="tasksTbl" layoutX="229.0" layoutY="136.0" prefHeight="363.0" prefWidth="570.0" style="-fx-background-color: white;">
-         <columns>
-            <TableColumn fx:id="categoryClm" editable="false" prefWidth="96.0" text="Category" />
-            <TableColumn fx:id="createdClm" editable="false" prefWidth="96.0" text="Created" />
-            <TableColumn fx:id="dueClm" editable="false" prefWidth="96.0" text="Due" />
-            <TableColumn fx:id="titleClm" editable="false" prefWidth="96.0" text="Title" />
-            <TableColumn fx:id="descriptionClm" editable="false" prefWidth="96.0" text="Description" />
-            <TableColumn fx:id="completedClm" editable="false" prefWidth="96.0" text="Completed" />
-         </columns>
-      </TableView>
+      <TableView fx:id="tasksTbl" layoutX="229.0" layoutY="136.0" prefHeight="363.0" prefWidth="570.0" stylesheets="@../../../../StyleSheets/tableView.css" />
       <Button fx:id="newTaskBtn" layoutX="733.0" layoutY="509.0" mnemonicParsing="false" onAction="#showCreateTaskScene" text="+" textAlignment="JUSTIFY">
          <font>
             <Font size="16.0" />

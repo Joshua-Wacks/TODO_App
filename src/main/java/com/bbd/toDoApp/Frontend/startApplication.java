@@ -1,6 +1,7 @@
 package com.bbd.toDoApp.Frontend;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -29,31 +30,19 @@ public class startApplication extends Application {
 //    }
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage primaryStage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(startApplication.class.getResource("viewTasks-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("ToDo App!");
-        stage.setResizable(false);
-        stage.setScene(scene);
+        primaryStage.setTitle("ToDo App!");
+        primaryStage.setResizable(false);
+        primaryStage.setScene(scene);
         //This is how we fetch stuff before the screen is loaded
-        stage.setOnShown((WindowEvent event) -> {
-            Button newTaskBtn = (Button) scene.lookup("#newTaskBtn");
-            double r=20;
-            newTaskBtn.setShape(new Circle(r));
-            newTaskBtn.setMinSize(2*r, 2*r);
-            newTaskBtn.setMaxSize(2*r, 2*r);
-
-            TableView tasksTbl = (TableView) scene.lookup("#tasksTbl");
-            //Setting Columns programmatically
-//            TableColumn col = new TableColumn("Column1");
-//            col.setCellValueFactory((Callback<TableColumn.CellDataFeatures<ObservableList, String>, ObservableValue<String>>) param -> new SimpleStringProperty(param.getValue().get(1).toString()));
-//            col.getColumns().addAll(col);
-        });
-        stage.show();
-
-
-// Create event handler
-
+//        primaryStage.setOnShown((WindowEvent event) -> {
+//
+//
+//        });
+        primaryStage.show();
+        primaryStage.setOnCloseRequest(e -> Platform.exit());
 
     }
 

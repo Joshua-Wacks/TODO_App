@@ -14,7 +14,7 @@
             <Font name="Calibri Bold Italic" size="34.0" />
          </font>
       </TextField>
-      <TextField editable="false" layoutX="44.0" layoutY="70.0" prefHeight="51.0" prefWidth="111.0" style="-fx-background-color: black; -fx-text-fill: white;" text="Task:" AnchorPane.leftAnchor="40.0">
+      <TextField editable="false" layoutX="44.0" layoutY="70.0" prefHeight="51.0" prefWidth="111.0" style="-fx-background-color: black; -fx-text-fill: white;" text="com.bbd.toDoApp.Frontend.Objects.Task:" AnchorPane.leftAnchor="40.0">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>

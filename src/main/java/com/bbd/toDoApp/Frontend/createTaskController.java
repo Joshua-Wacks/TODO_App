@@ -3,21 +3,25 @@ package com.bbd.toDoApp.Frontend;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.text.DateFormatSymbols;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.YearMonth;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class createTaskController {
+    private static final Calendar calendar = Calendar.getInstance();
     @FXML
     private Button addTaskBtn;
     @FXML
@@ -41,7 +45,6 @@ public class createTaskController {
         categoryChoiceBox.setValue("Tasks");
         categoryChoiceBox.setItems(defaultCategories);
 
-        Calendar calendar = Calendar.getInstance();
         int month = calendar.get(Calendar.MONTH) +1;
         int year = calendar.get(Calendar.YEAR);
         YearMonth yearMonthObject = YearMonth.of(year, month );
@@ -58,13 +61,10 @@ public class createTaskController {
         Arrays.stream(Arrays.copyOfRange(monthNames, 0, 12)).forEach(x -> monthChoiceBox.getItems().add(x));
 
         yearChoiceBox.setValue(year +"");
-        IntStream.rangeClosed(year,year+100).boxed().forEach(x -> yearChoiceBox.getItems().add(x+""));
-
 
     }
 
-    public void createTask()
-    {
+    public void createTask() throws ParseException, IOException {
         //TODO may need to put more checks in a separate method
 
         Scene scene = (Scene) addTaskBtn.getScene();
@@ -75,14 +75,45 @@ public class createTaskController {
             return;
         }
         //At this point we can assume that all the fields are fulled out correctly
-
         descTxa = (TextArea) scene.lookup("#descTxa");
-        //Get all info filled out, persist to db and repopulate
+        categoryChoiceBox = (ChoiceBox<String>) scene.lookup("#categoryChoiceBox");
+        dayChoiceBox = (ChoiceBox<String>) scene.lookup("#dayChoiceBox");
+        monthChoiceBox = (ChoiceBox<String>) scene.lookup("#monthChoiceBox");
+        yearChoiceBox = (ChoiceBox<String>) scene.lookup("#yearChoiceBox");
 
+        String desc,category;
+        StringBuilder dueStr = new StringBuilder();
+        Date created,due;
 
+        desc = descTxa.getText();
+        category = categoryChoiceBox.getValue();
+        created = new Date();
+        dueStr.append(dayChoiceBox.getValue());
+        dueStr.append("/");
+        Date dateConverter = new SimpleDateFormat("MMMM", Locale.ENGLISH).parse(monthChoiceBox.getValue());
+        calendar.setTime(dateConverter);
+        dueStr.append(calendar.get(Calendar.MONTH));
+        dueStr.append("/");
+        dueStr.append(yearChoiceBox.getValue());
+        dueStr.append("/");
+        due = new SimpleDateFormat("dd/MM/yyyy").parse(dueStr.toString());
+
+        //TODO
+        //Persist this new task to the DB
+        //Re-fetch and populate the table
+        //close the new task pop-up
+
+//        viewTasksController.addTaskToTable(task,desc,category,created,due);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("viewTasks-view.fxml"));
+        Parent root = loader.load();
+        viewTasksController viewTasksController = loader.getController();
+//        viewTasksController.addTaskToTable(task,desc,category,created,due);
+        viewTasksController.addTaskToTable(task,desc,category,"test","due");
+
+        Stage stage = (Stage) addTaskBtn.getScene().getWindow();
+        stage.close();
 
     }
-
     private Boolean testInputFields(TextField taskTxf,String task)
     {
         if(task.equals("")){
@@ -91,4 +122,6 @@ public class createTaskController {
         }
         return true;
     }
+
+
 }

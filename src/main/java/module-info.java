@@ -9,5 +9,9 @@ module com.example.firstjavafxproject {
     requires org.kordamp.bootstrapfx.core;
 
     opens com.bbd.toDoApp.Frontend to javafx.fxml;
+    opens com.bbd.toDoApp.Frontend.Objects to javafx.fxml;
+
     exports com.bbd.toDoApp.Frontend;
+    exports com.bbd.toDoApp.Frontend.Objects;
+
 }
