@@ -33,7 +33,7 @@ public class startApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(startApplication.class.getResource("signup-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(startApplication.class.getResource("login-view.fxml"));
         scene = new Scene(fxmlLoader.load());
         primaryStage.setTitle("ToDo App!");
         primaryStage.setResizable(false);
