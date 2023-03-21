@@ -61,25 +61,21 @@ public class createTaskController {
         Arrays.stream(Arrays.copyOfRange(monthNames, 0, 12)).forEach(x -> monthChoiceBox.getItems().add(x));
 
         yearChoiceBox.setValue(year +"");
+        IntStream.rangeClosed(year,year+8).boxed().forEach(x -> yearChoiceBox.getItems().add(x+""));
+
 
     }
 
     public void createTask() throws ParseException, IOException {
         //TODO may need to put more checks in a separate method
-
-        Scene scene = (Scene) addTaskBtn.getScene();
-        taskTxf = (TextField) scene.lookup("#taskTxf");
+        //TODO Fix this, should not be fetching again
+        //TODO do logic like in viewTaskController that is cleaner
         String task = taskTxf.getText();
         if(!testInputFields(taskTxf,task))
         {
             return;
         }
         //At this point we can assume that all the fields are fulled out correctly
-        descTxa = (TextArea) scene.lookup("#descTxa");
-        categoryChoiceBox = (ChoiceBox<String>) scene.lookup("#categoryChoiceBox");
-        dayChoiceBox = (ChoiceBox<String>) scene.lookup("#dayChoiceBox");
-        monthChoiceBox = (ChoiceBox<String>) scene.lookup("#monthChoiceBox");
-        yearChoiceBox = (ChoiceBox<String>) scene.lookup("#yearChoiceBox");
 
         String desc,category;
         StringBuilder dueStr = new StringBuilder();
@@ -101,14 +97,14 @@ public class createTaskController {
         //TODO
         //Persist this new task to the DB
         //Re-fetch and populate the table
-        //close the new task pop-up
 
 //        viewTasksController.addTaskToTable(task,desc,category,created,due);
         FXMLLoader loader = new FXMLLoader(getClass().getResource("viewTasks-view.fxml"));
         Parent root = loader.load();
-        viewTasksController viewTasksController = loader.getController();
+        //TODO persist to DB
+//        viewTasksController viewTasksController = loader.getController();
 //        viewTasksController.addTaskToTable(task,desc,category,created,due);
-        viewTasksController.addTaskToTable(task,desc,category,"test","due");
+//        viewTasksController.addTaskToTable(task,"desc",category,"test","due");
 
         Stage stage = (Stage) addTaskBtn.getScene().getWindow();
         stage.close();

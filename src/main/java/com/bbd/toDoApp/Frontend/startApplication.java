@@ -28,19 +28,16 @@ public class startApplication extends Application {
 //        stage.setScene(scene);
 //        stage.show();
 //    }
-
     private static Scene scene;
-
     @Override
     public void start(Stage primaryStage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(startApplication.class.getResource("login-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(startApplication.class.getResource("viewTasks-view.fxml"));
         scene = new Scene(fxmlLoader.load());
         primaryStage.setTitle("ToDo App!");
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);
         //This is how we fetch stuff before the screen is loaded
 //        primaryStage.setOnShown((WindowEvent event) -> {
-//
 //
 //        });
         primaryStage.show();
@@ -52,6 +49,7 @@ public class startApplication extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(startApplication.class.getResource(fxml));
         scene.setRoot(fxmlLoader.load());
     }
+
 
     public static void main(String[] args) {
         launch();
