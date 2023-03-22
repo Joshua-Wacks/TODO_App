@@ -1,8 +1,4 @@
-package main.java.com.bbd.toDoApp.dbconnection;
-
-import main.java.com.bbd.toDoApp.model.Category;
-import main.java.com.bbd.toDoApp.model.Task;
-import main.java.com.bbd.toDoApp.model.User;
+package com.bbd.toDoApp.dbconnection;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -17,6 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.bbd.toDoApp.model.Task;
+import com.bbd.toDoApp.model.User;
+import com.bbd.toDoApp.model.Category;
+
 /**
  * Connecting to the database.
  * @author Khuthadzo Nemauluma
@@ -27,7 +27,7 @@ public class Connection implements Closeable {
     private static final String SCHEMA = "todo_app_db";
     private static final String DB_URL = "jdbc:mysql://localhost:3306/" + SCHEMA;
     private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "tharaga@codes95!";
+    private static final String DB_PASSWORD = "admin";
     private static final String USER_TABLE = "users";
     private static final String CATEGORY_TABLE = "categories";
     private static final String TASK_TABLE = "tasks";
@@ -57,6 +57,8 @@ public class Connection implements Closeable {
             statement.execute(query.toString());
             return true;
         } catch (SQLException e) {
+            System.out.println(e);
+
             return false;
         }
     }
@@ -216,6 +218,19 @@ public class Connection implements Closeable {
             return categories;
         }
     }
+    public List<Task> retrieveTasksFor(String username){
+        List<Task> tasks = new ArrayList<>();
+        try(Statement statement = connection.createStatement()){
+            String query = String.format("SELECT * FROM %s.%s INNER JOIN %s.%s WHERE %s.Username = \"%s\"", SCHEMA, TASK_TABLE,SCHEMA, USER_TABLE, USER_TABLE, username);
+            ResultSet resultSet = statement.executeQuery(query);
+            while (resultSet.next())
+                tasks.add(getTask(resultSet));
+            return tasks;
+        } catch (SQLException e) {
+            return tasks;
+        }
+    }
+
     public List<Task> retrieveTasksFor(int userID){
         List<Task> tasks = new ArrayList<>();
         try(Statement statement = connection.createStatement()){
