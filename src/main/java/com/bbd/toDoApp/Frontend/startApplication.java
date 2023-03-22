@@ -1,5 +1,7 @@
 package com.bbd.toDoApp.Frontend;
 
+import com.bbd.toDoApp.dbconnection.Connection;
+import com.bbd.toDoApp.model.User;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -17,6 +19,7 @@ import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 public class startApplication extends Application {
@@ -52,6 +55,7 @@ public class startApplication extends Application {
 
 
     public static void main(String[] args) {
+
         launch();
     }
 }

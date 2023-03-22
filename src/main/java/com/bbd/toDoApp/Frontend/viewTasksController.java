@@ -1,6 +1,8 @@
 package com.bbd.toDoApp.Frontend;
 
 import com.bbd.toDoApp.Frontend.Objects.TodoItem;
+import com.bbd.toDoApp.dbconnection.Connection;
+import com.bbd.toDoApp.model.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -18,6 +20,12 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 //TODO: Add icons to fields
 //TODO: Group tasks by their categories
@@ -53,7 +61,7 @@ public class viewTasksController {
         makeButtonCircular();
         createColumnHeadings();
         initCategories();
-//        initTable();
+        initTable();
     }
     private void makeButtonCircular() {
         double r=20;
@@ -95,6 +103,20 @@ public class viewTasksController {
 
     }
 
+    private void initTable(){
+        try {
+            Connection connection = new Connection();
+            List<Task>  userTasks = connection.retrieveTasksFor("TEST");
+            for(Task task: userTasks)
+            {
+                addTaskToTable(task.getTitle(),task.getDescription(),task.getDescription(),task.getCreationDate(),task.getDueDate());
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void showCreateTaskScene() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("createTask-view.fxml"));
@@ -105,10 +127,14 @@ public class viewTasksController {
         stage.show();
 
     }
-    public void addTaskToTable(String task, String desc, String category, String created, String due)
+
+    private String toDate(Timestamp timestamp) {
+        return timestamp.toString().split(" ")[0];
+    }
+    public void addTaskToTable(String task, String desc, String category, Timestamp created, Timestamp due)
     {
         System.out.println(task+desc+category+created+due+"No");
-        TodoItem todoItem = new TodoItem(task,desc,category,created,due,"No");
+        TodoItem todoItem = new TodoItem(task,desc,category,toDate(created),toDate(due),"No");
         tasksTbl.getItems().add(todoItem);
         tasksTbl.refresh();
     }

@@ -17,7 +17,7 @@
     </padding>
    <ImageView fitHeight="164.0" fitWidth="397.0" pickOnBounds="true" preserveRatio="true">
       <image>
-         <Image url="@../../../../Images/ToDo%20Logo.png" />
+         <Image url="@../../../../Images/-ToDo%20Logo.png" />
       </image>
       <VBox.margin>
          <Insets bottom="100.0" />

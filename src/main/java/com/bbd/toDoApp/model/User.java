@@ -1,4 +1,4 @@
-package main.java.com.bbd.toDoApp.model;
+package com.bbd.toDoApp.model;
 
 /**
  * Models a user
