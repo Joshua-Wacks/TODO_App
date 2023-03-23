@@ -13,6 +13,7 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -20,8 +21,11 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 
@@ -57,6 +61,12 @@ public class viewTasksController {
     private TextField newCategoryTxf;
     @FXML
     private Button addCategoryBtn;
+    @FXML
+    private Text welcomeDisplay;
+    @FXML
+    private Text welcomeDate;
+    @FXML
+    private Text welcomeTasks;
 
     @FXML//This method is the equivalent of an onLoad method
     protected void initialize() throws MalformedURLException {
@@ -78,6 +88,7 @@ public class viewTasksController {
         createColumnHeadings();
         initCategories();
         initTable();
+        initWelcomeHeader();
     }
     private void makeButtonCircular() {
         double r=20;
@@ -161,6 +172,22 @@ public class viewTasksController {
         }
         tasksTbl.refresh();
 
+    }
+
+    private void initWelcomeHeader(){
+        welcomeDisplay.setText("Hello, " + user.getUsername());
+
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        welcomeDate.setText(formatter.format(calendar.getTime()));
+
+        //retrieveDailyWelcomeTasks
+        Optional<Integer> numTasks = connection.retrieveDailyWelcomeTasks(user.getID());
+        if(numTasks.isEmpty()){
+            welcomeTasks.setText("0");
+        } else {
+            welcomeTasks.setText(String.valueOf(numTasks.get()));
+        }
     }
 
     public void showCreateTaskScene() throws IOException {

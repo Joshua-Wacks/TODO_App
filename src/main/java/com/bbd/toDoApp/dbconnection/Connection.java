@@ -211,6 +211,17 @@ public class Connection implements Closeable {
         } catch (SQLException e) {
             return Optional.empty();
         }
+    }
+    public Optional<Integer> retrieveDailyWelcomeTasks(int userID){
+        try(Statement statement = connection.createStatement()){
+            String query = String.format("SELECT COUNT(*) AS Tasks FROM %s.%s WHERE %s.User_ID = %d and %s.Completed = False", SCHEMA, TASK_TABLE, TASK_TABLE, userID, TASK_TABLE);
+            ResultSet resultSet = statement.executeQuery(query);
+            if (resultSet.next())
+                return Optional.of(resultSet.getInt("Tasks"));
+            return Optional.empty();
+        } catch (SQLException e) {
+            return Optional.empty();
+        }
 
     }
     public Optional<Category> retrieveCategory(int categoryID){
