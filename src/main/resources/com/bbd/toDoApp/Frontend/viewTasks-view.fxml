@@ -8,18 +8,81 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
+<?import javafx.scene.paint.LinearGradient?>
 <?import javafx.scene.paint.RadialGradient?>
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane fx:id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="568.0" prefWidth="800.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bbd.toDoApp.Frontend.viewTasksController">
    <children>
-      <TextArea fx:id="userInfoHdrtxA" layoutY="27.0" prefHeight="115.0" prefWidth="800.0" text="User Info" />
+      <HBox layoutY="27.0" prefHeight="115.0" prefWidth="800.0" style="-fx-background-color: black;">
+         <children>
+            <VBox prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Text fx:id="welcomeDisplay" strokeType="OUTSIDE" strokeWidth="0.0" text="Hello, Username">
+                     <font>
+                        <Font size="36.0" />
+                     </font>
+                     <fill>
+                        <LinearGradient endX="0.5118483412322274" endY="1.0" startX="0.5118483412322274">
+                           <stops>
+                              <Stop>
+                                 <color>
+                                    <Color red="0.5254902243614197" green="0.7686274647712708" blue="0.8745098114013672" />
+                                 </color>
+                              </Stop>
+                              <Stop offset="1.0">
+                                 <color>
+                                    <Color red="0.47058823704719543" green="0.3607843220233917" blue="0.8705882430076599" />
+                                 </color>
+                              </Stop>
+                           </stops>
+                        </LinearGradient>
+                     </fill>
+                     <VBox.margin>
+                        <Insets bottom="10.0" />
+                     </VBox.margin>
+                  </Text>
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Text fill="#86c4df" strokeType="OUTSIDE" strokeWidth="0.0" text="You have ">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Text>
+                        <Text fx:id="welcomeTasks" fill="#86c4df" layoutX="10.0" layoutY="29.0" strokeType="OUTSIDE" strokeWidth="0.0" text="8">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Text>
+                        <Text fill="#86c4df" layoutX="228.0" layoutY="29.0" strokeType="OUTSIDE" strokeWidth="0.0" text=" outstanding tasks due today!">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Text>
+                     </children>
+                  </HBox>
+                  <Text fx:id="welcomeDate" fill="#775dde" strokeType="OUTSIDE" strokeWidth="0.0" text="23/03/2023" />
+               </children>
+            </VBox>
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+      <ImageView fitHeight="90.0" fitWidth="377.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">
+         <image>
+            <Image url="@../../../../Images/ToDo%20Logo.png" />
+         </image>
+      </ImageView>
       <TableView fx:id="tasksTbl" layoutX="230.0" layoutY="140.0" prefHeight="426.0" prefWidth="570.0" stylesheets="@../../../../StyleSheets/tableView.css" AnchorPane.bottomAnchor="0.0">
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
