@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,10 +25,13 @@ import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.IntStream;
 
+//TODO: check for special characters
+
 public class createTaskController {
     private static final Calendar calendar = Calendar.getInstance();
     private static Connection connection;
     private static int userID = 1;//TODO: should be getting this from context
+    private static List<Category> userCategories;
     @FXML
     private Button addTaskBtn;
     @FXML
@@ -52,7 +56,7 @@ public class createTaskController {
         }
 
         ObservableList<String> categories = FXCollections.observableArrayList();
-        List<Category> userCategories = connection.retrieveCategoriesFor(userID);
+        userCategories = connection.retrieveCategoriesFor(userID);
         userCategories.forEach(c -> categories.add(c.getName()));
         categoryChoiceBox.setValue(categories.get(0));
         categoryChoiceBox.setItems(categories);
@@ -87,21 +91,25 @@ public class createTaskController {
         //At this point we can assume that all the fields are fulled out correctly
 
         String desc,category;
-        StringBuilder dueStr = new StringBuilder();
-        Date created,due;
+        StringBuilder dueStr;
+//        String dueStr;
+        Timestamp created,due;
 
         desc = descTxa.getText();
         category = categoryChoiceBox.getValue();
-        created = new Date();
-        dueStr.append(dayChoiceBox.getValue());
-        dueStr.append("/");
+        created = new Timestamp(System.currentTimeMillis());
+        dueStr = new StringBuilder(yearChoiceBox.getValue() + "-");
         Date dateConverter = new SimpleDateFormat("MMMM", Locale.ENGLISH).parse(monthChoiceBox.getValue());
         calendar.setTime(dateConverter);
         dueStr.append(calendar.get(Calendar.MONTH));
-        dueStr.append("/");
-        dueStr.append(yearChoiceBox.getValue());
-        dueStr.append("/");
-        due = new SimpleDateFormat("dd/MM/yyyy").parse(dueStr.toString());
+        dueStr.append("-").append(dayChoiceBox.getValue());
+        dueStr.append(" 00:00:00");
+        due = Timestamp.valueOf(dueStr.toString());
+
+        int catId = userCategories.stream().filter(c->c.getName().equals(category)).findAny().get().getID();
+        Task task = new Task(userID,title,desc,created,due,catId);
+
+        connection.create(task);
 
         //TODO
         //Persist this new task to the DB
