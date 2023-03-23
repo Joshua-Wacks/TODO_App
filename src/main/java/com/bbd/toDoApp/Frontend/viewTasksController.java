@@ -26,6 +26,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 //TODO: Add icons to fields
 //TODO: Group tasks by their categories
@@ -105,9 +106,9 @@ public class viewTasksController {
 
     private void initCategories() {
         userCategories = connection.retrieveCategoriesFor(userID);
-        userCategories.forEach(c -> {
+        userCategories.forEach(category -> {
             try {
-                addCategoryToView(c.getName());
+                addCategoryToView(category);
             } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
             }
@@ -174,8 +175,8 @@ public class viewTasksController {
         }
     }
 
-    private void addCategoryToView(String cat) throws MalformedURLException {
-        Button newCategoryBtn = new Button(cat);
+    private void addCategoryToView(Category cat) throws MalformedURLException {
+        Button newCategoryBtn = new Button(cat.getName());
         //TODO fix this path
         File file = new File("./src/main/resources/StyleSheets/buttonCustomization.css");
 
@@ -183,11 +184,15 @@ public class viewTasksController {
         newCategoryBtn.getStylesheets().add(url.toExternalForm());
         newCategoryBtn.setId("rich-blue");
         newCategoryBtn.setMaxWidth(300);
-        newCategoryBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                handleCategoryButtonThemes(newCategoryBtn);
-            }
+        newCategoryBtn.setOnAction((e)->{
+            tasksTbl.getItems().clear();
+            connection.retrieveTasksFor(1)
+                      .stream()
+                      .filter(task->task.getCategoryID() == cat.getID())
+                      .forEach(task->{
+                          task.setCategory(connection.retrieveCategory(task.getCategoryID()).get().getName());
+                          tasksTbl.getItems().add(task);
+                      });
         });
         catVBox.getChildren().add(newCategoryBtn);
 //        catScrollPane.setContent(catScrollPane.getContent()+ newCategory);
