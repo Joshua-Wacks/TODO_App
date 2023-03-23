@@ -35,6 +35,7 @@
       <VBox.margin>
          <Insets />
       </VBox.margin></PasswordField>
+   <Text fx:id="messageDisplay" fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" />
     <Button fx:id="signUpBtn" maxWidth="300.0" onAction="#onSignUpButtonClick" prefHeight="37.0" prefWidth="200.0" text="Sign Up">
       <cursor>
          <Cursor fx:constant="HAND" />

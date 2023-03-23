@@ -184,6 +184,30 @@ public class Connection implements Closeable {
         }
 
     }
+    public Optional<User> retrieveUser(String username){
+        try(Statement statement = connection.createStatement()){
+            String query = String.format("SELECT * FROM %s.%s WHERE %s.Username = %d", SCHEMA, USER_TABLE, USER_TABLE, username);
+            ResultSet resultSet = statement.executeQuery(query);
+            if (resultSet.next())
+                return Optional.of(getUser(resultSet));
+            return Optional.empty();
+        } catch (SQLException e) {
+            return Optional.empty();
+        }
+
+    }
+    public Optional<String> retrieveUserPass(String username){
+        try(Statement statement = connection.createStatement()){
+            String query = String.format("SELECT Password FROM %s.%s WHERE %s.Username = %d", SCHEMA, USER_TABLE, USER_TABLE, username);
+            ResultSet resultSet = statement.executeQuery(query);
+            if (resultSet.next())
+                return Optional.of(resultSet.getString("Password"));
+            return Optional.empty();
+        } catch (SQLException e) {
+            return Optional.empty();
+        }
+
+    }
     public Optional<Category> retrieveCategory(int categoryID){
         try(Statement statement = connection.createStatement()){
             String query = String.format("SELECT * FROM %s.%s WHERE %s.Category_ID = %d", SCHEMA, CATEGORY_TABLE, CATEGORY_TABLE, categoryID);
