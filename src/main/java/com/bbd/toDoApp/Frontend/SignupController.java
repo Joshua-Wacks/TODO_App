@@ -8,8 +8,13 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Optional;
@@ -29,7 +34,7 @@ public class SignupController {
     private Text messageDisplay;
 
     @FXML
-    protected void onSignUpButtonClick() throws SQLException {
+    protected void onSignUpButtonClick() throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException {
         //TODO: All the logic for logging a user in
         if(Objects.equals(passwordTxf.getText(), passwordTxf1.getText())){
             try {
@@ -65,19 +70,18 @@ public class SignupController {
         startApplication.setRoot("login-view.fxml");
     }
 
-    private static String encrypt(String input) {
-        input = input + "salt";
-        byte[] tmp = input.getBytes(StandardCharsets.UTF_8);
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalArgumentException(e);
-        }
-        byte[] result = md.digest(tmp);
+    private static String encrypt(String input) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+
+        KeySpec spec = new PBEKeySpec(input.toCharArray(), salt, 65536, 128);
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+
+        byte[] hash = factory.generateSecret(spec).getEncoded();
 
         StringBuilder sb = new StringBuilder();
-        for (byte b : result) {
+        for (byte b : hash) {
             sb.append(String.format("%02x", b));
         }
         return sb.toString();
