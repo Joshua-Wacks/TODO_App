@@ -1,5 +1,8 @@
 package com.bbd.toDoApp.Frontend;
 
+import com.bbd.toDoApp.dbconnection.Connection;
+import com.bbd.toDoApp.model.Category;
+import com.bbd.toDoApp.model.Task;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -13,6 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,6 +26,8 @@ import java.util.stream.IntStream;
 
 public class createTaskController {
     private static final Calendar calendar = Calendar.getInstance();
+    private static Connection connection;
+    private static int userID = 1;//TODO: should be getting this from context
     @FXML
     private Button addTaskBtn;
     @FXML
@@ -39,11 +45,17 @@ public class createTaskController {
 
     @FXML//This method is the equivalent of an onLoad method
     protected void initialize() {
-        //TODO fetch the default and user defined categories here
-        ObservableList<String> defaultCategories = FXCollections.observableArrayList();
-        defaultCategories.addAll("Tasks","Important","Planned");
-        categoryChoiceBox.setValue("Tasks");
-        categoryChoiceBox.setItems(defaultCategories);
+        try {
+            connection = new Connection();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        ObservableList<String> categories = FXCollections.observableArrayList();
+        List<Category> userCategories = connection.retrieveCategoriesFor(userID);
+        userCategories.forEach(c -> categories.add(c.getName()));
+        categoryChoiceBox.setValue(categories.get(0));
+        categoryChoiceBox.setItems(categories);
 
         int month = calendar.get(Calendar.MONTH) +1;
         int year = calendar.get(Calendar.YEAR);
@@ -63,15 +75,12 @@ public class createTaskController {
         yearChoiceBox.setValue(year +"");
         IntStream.rangeClosed(year,year+8).boxed().forEach(x -> yearChoiceBox.getItems().add(x+""));
 
-
     }
 
     public void createTask() throws ParseException, IOException {
         //TODO may need to put more checks in a separate method
-        //TODO Fix this, should not be fetching again
-        //TODO do logic like in viewTaskController that is cleaner
-        String task = taskTxf.getText();
-        if(!testInputFields(taskTxf,task))
+        String title = taskTxf.getText();
+        if(!testInputFields(title))//It does not pass some check
         {
             return;
         }
@@ -110,12 +119,21 @@ public class createTaskController {
         stage.close();
 
     }
-    private Boolean testInputFields(TextField taskTxf,String task)
+    private Boolean testInputFields(String task)
     {
         if(task.equals("")){
             taskTxf.setPromptText("ENTER A TASK");
             return false;
         }
+
+        List<Task> userTasks = connection.retrieveTasksFor("TEST");
+        Optional<Task> taskExists = userTasks.stream().filter(t -> t.getTitle().equals(task)).findFirst();
+        if(taskExists.isPresent()){
+            taskTxf.clear();
+            taskTxf.setPromptText("TASK NAME ALREADY EXISTS");
+            return false;
+        }
+
         return true;
     }
 

@@ -1,7 +1,7 @@
 package com.bbd.toDoApp.Frontend;
 
-import com.bbd.toDoApp.Frontend.Objects.TodoItem;
 import com.bbd.toDoApp.dbconnection.Connection;
+import com.bbd.toDoApp.model.Category;
 import com.bbd.toDoApp.model.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -42,10 +42,13 @@ import java.util.List;
 //TODO: add default categories for each user
 
 public class viewTasksController {
+    private static Connection connection;
+    private static List<Category> userCategories;
+    private static int userID = 1;//TODO: should be getting this from context
     @FXML
     private Button newTaskBtn;
     @FXML
-    private TableView<TodoItem> tasksTbl;
+    private TableView<Task> tasksTbl;
     @FXML
     private ScrollPane catScrollPane;
     @FXML
@@ -58,6 +61,11 @@ public class viewTasksController {
     @FXML//This method is the equivalent of an onLoad method
     protected void initialize() throws MalformedURLException {
 
+        try {
+            connection = new Connection();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         makeButtonCircular();
         createColumnHeadings();
         initCategories();
@@ -70,51 +78,52 @@ public class viewTasksController {
         newTaskBtn.setMaxSize(2*r, 2*r);
     }
     private void createColumnHeadings() {
-        TableColumn<TodoItem,String> categoryColumn = new TableColumn<>("Category");
-        categoryColumn.setCellValueFactory(new PropertyValueFactory<TodoItem,String>("category"));
+        TableColumn<Task,String> categoryColumn = new TableColumn<>("Category");
+        categoryColumn.setCellValueFactory(new PropertyValueFactory<Task,String>("category"));
         tasksTbl.getColumns().add(categoryColumn);
 
-        TableColumn<TodoItem,String> taskColumn = new TableColumn<>("Task");
-        taskColumn.setCellValueFactory(new PropertyValueFactory<TodoItem,String>("task"));
+        TableColumn<Task,String> taskColumn = new TableColumn<>("Title");
+        taskColumn.setCellValueFactory(new PropertyValueFactory<Task,String>("title"));
         tasksTbl.getColumns().add(taskColumn);
 
-        TableColumn<TodoItem,String> descriptionColumn = new TableColumn<>("Description");
-        descriptionColumn.setCellValueFactory(new PropertyValueFactory<TodoItem,String>("description"));
+        TableColumn<Task,String> descriptionColumn = new TableColumn<>("Description");
+        descriptionColumn.setCellValueFactory(new PropertyValueFactory<Task,String>("description"));
         tasksTbl.getColumns().add(descriptionColumn);
 
-        TableColumn<TodoItem,String> createdColumn = new TableColumn<>("Created");
-        createdColumn.setCellValueFactory(new PropertyValueFactory<TodoItem,String>("created"));
+        TableColumn<Task,String> createdColumn = new TableColumn<>("Created");
+        createdColumn.setCellValueFactory(new PropertyValueFactory<Task,String>("creationDateStr"));
         tasksTbl.getColumns().add(createdColumn);
 
-        TableColumn<TodoItem,String> dueColumn = new TableColumn<>("Due");
-        dueColumn.setCellValueFactory(new PropertyValueFactory<TodoItem,String>("due"));
+        TableColumn<Task,String> dueColumn = new TableColumn<>("Due");
+        dueColumn.setCellValueFactory(new PropertyValueFactory<Task,String>("dueDateStr"));
         tasksTbl.getColumns().add(dueColumn);
 
-        TableColumn<TodoItem,String> completedColumn = new TableColumn<>("Completed");
-        completedColumn.setCellValueFactory(new PropertyValueFactory<TodoItem,String>("completed"));
+        TableColumn<Task,Boolean> completedColumn = new TableColumn<>("Completed");
+        completedColumn.setCellValueFactory(new PropertyValueFactory<Task,Boolean>("completed"));
         tasksTbl.getColumns().add(completedColumn);
     }
 
-    private void initCategories() throws MalformedURLException {
-        //TODO: do fetch here
-        addCategoryToView("Tasks");
-        addCategoryToView("Important");
-        addCategoryToView("Planned");
-
+    private void initCategories() {
+        userCategories = connection.retrieveCategoriesFor(userID);
+        userCategories.forEach(c -> {
+            try {
+                addCategoryToView(c.getName());
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     private void initTable(){
-        try {
-            Connection connection = new Connection();
-            List<Task>  userTasks = connection.retrieveTasksFor("TEST");
-            for(Task task: userTasks)
-            {
-                addTaskToTable(task.getTitle(),task.getDescription(),task.getDescription(),task.getCreationDate(),task.getDueDate());
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        List<Task> userTasks = connection.retrieveTasksFor(userID);
+        for(Task task: userTasks)
+        {
+            task.setCategory(userCategories.stream().filter(c->c.getID() == task.getID()).findAny().get().getName());
+            tasksTbl.getItems().add(task);
         }
+        tasksTbl.refresh();
+
+
     }
 
     public void showCreateTaskScene() throws IOException {
@@ -131,13 +140,13 @@ public class viewTasksController {
     private String toDate(Timestamp timestamp) {
         return timestamp.toString().split(" ")[0];
     }
-    public void addTaskToTable(String task, String desc, String category, Timestamp created, Timestamp due)
-    {
-        System.out.println(task+desc+category+created+due+"No");
-        TodoItem todoItem = new TodoItem(task,desc,category,toDate(created),toDate(due),"No");
-        tasksTbl.getItems().add(todoItem);
-        tasksTbl.refresh();
-    }
+//    public void addTaskToTable(Task task)
+//    {
+//        //TODO: Get userID here
+//        Task Task = new Task(ownerID,title,desc,category,toDate(created),toDate(due),"No");
+//        tasksTbl.getItems().add(Task);
+//        tasksTbl.refresh();
+//    }
 
     public void getCategoryToAdd() throws MalformedURLException {
         String newCat = newCategoryTxf.getText();
