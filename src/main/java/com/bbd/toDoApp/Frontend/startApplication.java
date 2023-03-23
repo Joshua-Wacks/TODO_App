@@ -9,15 +9,11 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 //TODO:
-//User info
-//logout
 //change password
 
 //Left pane categories
 //reminders
-
-//View and edit tasks
-//Delete categories and tasks
+//Delete categories
 
 public class startApplication extends Application {
 //    @Override

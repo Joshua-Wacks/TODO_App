@@ -90,8 +90,8 @@ public class Connection implements Closeable {
     public boolean create(Category category) {
         try(Statement statement = connection.createStatement()) {
             StringBuilder query = new StringBuilder();
-            query.append(String.format("INSERT INTO %s.%s (Category_name, User_ID, Description)\n", SCHEMA, CATEGORY_TABLE));
-            query.append(String.format("VALUES (\"%s\", %d, \"%s\")", category.getName(), category.getOwnerID(), category.getDescription()));
+            query.append(String.format("INSERT INTO %s.%s (Category_name, User_ID) ", SCHEMA, CATEGORY_TABLE));
+            query.append(String.format("VALUES (\"%s\", %d)", category.getName(), category.getOwnerID()));
             statement.execute(query.toString());
             return true;
         } catch (SQLException e) {
@@ -147,21 +147,21 @@ public class Connection implements Closeable {
      * Updates a category record.
      * The user must have a Category_ID matching a record in a table.
      *
-     * @param category the user to be updated
+//     * @param category the user to be updated
      * @return true if success, and false otherwise
      */
-    public boolean update(Category category){
-        try(Statement statement = connection.createStatement()){
-            StringBuilder query = new StringBuilder();
-            query.append(String.format("UPDATE %s.%s\n", SCHEMA, CATEGORY_TABLE));
-            query.append(String.format("SET %s.Category_name = \"%s\", %s.Description = \"%s\"\n", USER_TABLE, category.getName(), USER_TABLE, category.getDescription()));
-            query.append(String.format("WHERE User_ID = %d", category.getID()));
-            statement.execute(query.toString());
-            return true;
-        } catch (SQLException e) {
-            return false;
-        }
-    }
+//    public boolean update(Category category){
+//        try(Statement statement = connection.createStatement()){
+//            StringBuilder query = new StringBuilder();
+//            query.append(String.format("UPDATE %s.%s\n", SCHEMA, CATEGORY_TABLE));
+//            query.append(String.format("SET %s.Category_name = \"%s\", %s.Description = \"%s\"\n", USER_TABLE, category.getName(), USER_TABLE, category.getDescription()));
+//            query.append(String.format("WHERE User_ID = %d", category.getID()));
+//            statement.execute(query.toString());
+//            return true;
+//        } catch (SQLException e) {
+//            return false;
+//        }
+//    }
 
 
     //////////////////////////////////////////
@@ -342,8 +342,7 @@ public class Connection implements Closeable {
             int categoryID = resultSet.getInt("Category_ID");
             String name = resultSet.getString("Category_name");
             int userID = resultSet.getInt("User_ID");
-            String description = resultSet.getString("Description");
-            return new Category(categoryID, name, userID, description);
+            return new Category(categoryID, name, userID);
         } catch (SQLException e) {
             return null;
         }

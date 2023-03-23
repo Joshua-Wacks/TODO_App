@@ -9,7 +9,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
@@ -181,6 +180,7 @@ public class viewTasksController {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         welcomeDate.setText(formatter.format(calendar.getTime()));
 
+        //TODO: no need for new sql and should include date here
         //retrieveDailyWelcomeTasks
         Optional<Integer> numTasks = connection.retrieveDailyWelcomeTasks(user.getID());
         if(numTasks.isEmpty()){
@@ -225,7 +225,7 @@ public class viewTasksController {
             return;
         }
         newCategoryTxf.clear();
-        Category category = new Category(newCat,user.getID(),"");
+        Category category = new Category(newCat,user.getID());
         persistCategory(category);
         addCategoryToView(category);
     }
@@ -242,7 +242,6 @@ public class viewTasksController {
             btn.setId("rich-blue");
         }
     }
-
 
     private void persistCategory(Category category)
     {
