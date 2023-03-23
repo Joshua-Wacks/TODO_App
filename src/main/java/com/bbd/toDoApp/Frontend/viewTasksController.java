@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -147,6 +148,9 @@ public class viewTasksController {
     }
 
     private void initCategories() {
+
+        //addFixedCategories();
+
         userCategories = connection.retrieveCategoriesFor(user.getID());
         userCategories.forEach(category -> {
             try {
@@ -267,7 +271,59 @@ public class viewTasksController {
                       });
         });
         catVBox.getChildren().add(newCategoryBtn);
+    }
 
+    private void addFixedCategories() throws MalformedURLException {
+        Button allTasksBtn = new Button("All Tasks");
+        //TODO fix this path
+        File file = new File("./src/main/resources/StyleSheets/buttonCustomization.css");
+
+        URL url = file.toURI().toURL();
+        allTasksBtn.getStylesheets().add(url.toExternalForm());
+        allTasksBtn.setId("rich-blue");
+        allTasksBtn.setMaxWidth(300);
+        allTasksBtn.setOnAction((e)->{
+            tasksTbl.getItems().clear();
+            connection.retrieveTasksFor(user.getID())
+                    .stream()
+                    .forEach(task->{
+                        task.setCategory(connection.retrieveCategory(task.getCategoryID()).get().getName());
+                        tasksTbl.getItems().add(task);
+                    });
+        });
+        catVBox.getChildren().add(allTasksBtn);
+
+        Button completedBtn = new Button("Completed");
+        completedBtn.getStylesheets().add(url.toExternalForm());
+        completedBtn.setId("rich-blue");
+        completedBtn.setMaxWidth(300);
+        completedBtn.setOnAction((e)->{
+            tasksTbl.getItems().clear();
+            connection.retrieveTasksFor(user.getID())
+                    .stream()
+                    .filter(task->task.isCompleted())
+                    .forEach(task->{
+                        task.setCategory(connection.retrieveCategory(task.getCategoryID()).get().getName());
+                        tasksTbl.getItems().add(task);
+                    });
+        });
+        catVBox.getChildren().add(completedBtn);
+
+        Button overdueBtn = new Button("Over due");
+        overdueBtn.getStylesheets().add(url.toExternalForm());
+        overdueBtn.setId("rich-blue");
+        overdueBtn.setMaxWidth(300);
+        overdueBtn.setOnAction((e)->{
+            tasksTbl.getItems().clear();
+            connection.retrieveTasksFor(user.getID())
+                    .stream()
+                    .filter(task->task.getDueDate().compareTo(new Timestamp(System.currentTimeMillis())) < 0)
+                    .forEach(task->{
+                        task.setCategory(connection.retrieveCategory(task.getCategoryID()).get().getName());
+                        tasksTbl.getItems().add(task);
+                    });
+        });
+        catVBox.getChildren().add(overdueBtn);
     }
 
     public static Task getRowSelected(){return rowSelected;}
