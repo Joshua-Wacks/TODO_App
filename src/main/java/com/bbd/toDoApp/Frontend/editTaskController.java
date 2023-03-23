@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 public class editTaskController {
-    boolean debug = true;
+    boolean debug = false;
     private static Connection connection;
     private static User user;
     private static List<Category> userCategories;
@@ -179,19 +179,26 @@ public class editTaskController {
             taskTxf.setPromptText("ENTER A TASK");
             return false;
         }
+        if(task.equals(rowSelected.getTitle())){
+            return true;
+        }
 
         List<Task> userTasks = connection.retrieveTasksFor("TEST");
         Optional<Task> taskExists = userTasks.stream().filter(t -> t.getTitle().equals(task)).findFirst();
         if(taskExists.isPresent()){
             taskTxf.clear();
-            taskTxf.setPromptText("TASK NAME ALREADY EXISTS");
+            taskTxf.setPromptText("Task name must remain the same or that name already exists");
             return false;
         }
         return true;
     }
 
-    public void deleteTask()
-    {
+    public void deleteTask() throws IOException {
 
+        connection.deleteTask(rowSelected);//persist
+
+        Stage stage = (Stage) saveTaskBtn.getScene().getWindow();
+        stage.close();
+        startApplication.setRoot("viewTasks-view.fxml");//refresh
     }
 }

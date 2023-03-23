@@ -23,7 +23,7 @@ import java.util.stream.IntStream;
 //TODO: check for special characters
 
 public class createTaskController {
-    boolean debug = true;
+    boolean debug = false;
     private static Connection connection;
     private static User user;
     private static List<Category> userCategories;

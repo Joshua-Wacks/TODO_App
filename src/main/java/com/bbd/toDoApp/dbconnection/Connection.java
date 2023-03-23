@@ -284,6 +284,18 @@ public class Connection implements Closeable {
         }
     }
 
+    public boolean deleteTask(Task task)
+    {
+        try(Statement statement = connection.createStatement()){
+            String query = String.format("DELETE FROM %s.%s WHERE %s.User_ID = %d AND %s.TASK_ID = %d", SCHEMA, TASK_TABLE, TASK_TABLE, task.getOwnerID(),TASK_TABLE, task.getID());
+            statement.execute(query);
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+
     /**
      * Creates a User instance from a ResultSet
      * @param resultSet ResultSet object with the information about a user
@@ -336,6 +348,8 @@ public class Connection implements Closeable {
             return null;
         }
     }
+
+
 
     @Override
     public void close() throws IOException {

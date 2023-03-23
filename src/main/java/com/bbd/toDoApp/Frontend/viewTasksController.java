@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
 //TODO: add default categories for each user
 
 public class viewTasksController {
-    boolean debug = true;
+    boolean debug = false;
     private static Connection connection;
     private static List<Category> userCategories;
     private static User user;
