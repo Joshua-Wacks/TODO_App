@@ -44,6 +44,7 @@ public class Task {
     }
 
     public int getID() { return taskID;}
+    public void setID(int ID){this.taskID = ID;}
     public int getOwnerID() { return ownerID;}
     public String getTitle() { return title;}
     public Timestamp getCreationDate() { return creationDate;}

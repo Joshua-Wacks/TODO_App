@@ -44,6 +44,7 @@ public class viewTasksController {
     private static Connection connection;
     private static List<Category> userCategories;
     private static User user;
+    private static Task rowSelected;
     @FXML
     private Button newTaskBtn;
     @FXML
@@ -109,6 +110,30 @@ public class viewTasksController {
         completedColumn.setCellValueFactory(new PropertyValueFactory<Task,CheckBox>("completed"));
         completedColumn.setCellValueFactory( new taskCompletedValueFactory());
         tasksTbl.getColumns().add(completedColumn);
+
+        //Handle the double click of row
+        tasksTbl.setRowFactory( tv -> {
+            TableRow<Task> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (!row.isEmpty()) ) {
+                    rowSelected = row.getItem();
+
+                    FXMLLoader fxmlLoader = new FXMLLoader();
+                    fxmlLoader.setLocation(getClass().getResource("editTask-view.fxml"));
+                    Scene scene = null;
+                    try {
+                        scene = new Scene(fxmlLoader.load());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    Stage stage = new Stage();
+                    stage.setTitle("Edit Task");
+                    stage.setScene(scene);
+                    stage.show();
+                }
+            });
+            return row ;
+        });
     }
 
     private void initCategories() {
@@ -218,5 +243,7 @@ public class viewTasksController {
         catVBox.getChildren().add(newCategoryBtn);
 
     }
+
+    public static Task getRowSelected(){return rowSelected;}
 
 }

@@ -20,15 +20,14 @@ import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.IntStream;
 
-//TODO: check for special characters
-
-public class createTaskController {
+public class editTaskController {
     boolean debug = true;
     private static Connection connection;
     private static User user;
     private static List<Category> userCategories;
+    private static Task rowSelected;
     @FXML
-    private Button addTaskBtn;
+    private Button saveTaskBtn;
     @FXML
     private TextField taskTxf;
     @FXML
@@ -60,18 +59,33 @@ public class createTaskController {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
+        rowSelected = viewTasksController.getRowSelected();
+
         Calendar calendar = Calendar.getInstance();
-
+        initFields();
         initDropDowns(calendar);
+    }
 
+    private void initFields()
+    {
+        taskTxf.setText(rowSelected.getTitle());
+        descTxa.setText(rowSelected.getDescription());
     }
 
     private void initDropDowns(Calendar calendar) {
         ObservableList<String> categories = FXCollections.observableArrayList();
         userCategories = connection.retrieveCategoriesFor(user.getID());
         userCategories.forEach(c -> categories.add(c.getName()));
-        categoryChoiceBox.setValue("Default");
         categoryChoiceBox.setItems(categories);
+        if(rowSelected.getCategoryID() == 1)//Dealing with the default category
+        {
+            categoryChoiceBox.setValue("Default");
+        }else{
+            categoryChoiceBox.setValue(userCategories.stream().filter(c->c.getID() == rowSelected.getCategoryID()).findAny().get().getName());
+        }
+
+        calendar.setTime(rowSelected.getDueDate());
 
         int month = calendar.get(Calendar.MONTH) +1;
         int year = calendar.get(Calendar.YEAR);
@@ -109,8 +123,7 @@ public class createTaskController {
         yearChoiceBox.setOnMouseClicked((e) -> {dueDateErrorLbl.setVisible(false);});
     }
 
-
-    public void createTask() throws ParseException, IOException {
+    public void saveTask() throws ParseException, IOException {
 
         String title = taskTxf.getText();
         if(!testInputFields(title))//It does not pass some check
@@ -121,7 +134,8 @@ public class createTaskController {
         Calendar calendar = Calendar.getInstance();
         String desc,category;
         StringBuilder dueStr;
-        Timestamp created,due;
+        Timestamp due;
+        Timestamp created = rowSelected.getCreationDate();
         int catId;
 
         desc = descTxa.getText();
@@ -149,15 +163,16 @@ public class createTaskController {
         else {
             catId = userCategories.stream().filter(c->c.getName().equals(category)).findAny().get().getID();
         }
+        Task newTask = new Task(user.getID(), title,desc,created,due,catId);
+        newTask.setID(rowSelected.getID());
+        connection.update(newTask);//persist
 
-        Task task = new Task(user.getID(), title,desc,created,due,catId);
-        connection.create(task);//persist
-
-        Stage stage = (Stage) addTaskBtn.getScene().getWindow();
+        Stage stage = (Stage) saveTaskBtn.getScene().getWindow();
         stage.close();
         startApplication.setRoot("viewTasks-view.fxml");//refresh
 
     }
+
     private Boolean testInputFields(String task)
     {
         if(task.equals("")){
@@ -173,5 +188,10 @@ public class createTaskController {
             return false;
         }
         return true;
+    }
+
+    public void deleteTask()
+    {
+
     }
 }
