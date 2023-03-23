@@ -6,13 +6,10 @@ import com.bbd.toDoApp.model.Task;
 import com.bbd.toDoApp.model.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -46,6 +43,8 @@ public class createTaskController {
     private ChoiceBox<String> monthChoiceBox;
     @FXML
     private ChoiceBox<String> yearChoiceBox;
+    @FXML
+    private Label dueDateErrorLbl;
 
     @FXML//This method is the equivalent of an onLoad method
     protected void initialize() {
@@ -88,7 +87,26 @@ public class createTaskController {
         yearChoiceBox.setValue(year +"");
         IntStream.rangeClosed(year,year+8).boxed().forEach(x -> yearChoiceBox.getItems().add(x+""));
 
+        //Adjusting the days in the month based on the month and year selected
+        dayChoiceBox.setOnMouseClicked((e)->{
+            Date dateConverter = null;
+            try {
+                dateConverter = new SimpleDateFormat("MMMM", Locale.ENGLISH).parse(monthChoiceBox.getValue());
+            } catch (ParseException ex) {
+                throw new RuntimeException(ex);
+            }
+            calendar.setTime(dateConverter);
+            YearMonth selectedYearMonthObject = YearMonth.of(Integer.parseInt(yearChoiceBox.getValue()), calendar.get(Calendar.MONTH) +1);
+            dayChoiceBox.getItems().clear();
+            IntStream.rangeClosed(1,selectedYearMonthObject.lengthOfMonth()).boxed().forEach(x -> dayChoiceBox.getItems().add(x+""));
+            dueDateErrorLbl.setVisible(false);
+        });
+
+        monthChoiceBox.setOnMouseClicked((e) -> {dueDateErrorLbl.setVisible(false);});
+        yearChoiceBox.setOnMouseClicked((e) -> {dueDateErrorLbl.setVisible(false);});
+
     }
+
 
     public void createTask() throws ParseException, IOException {
         //TODO may need to put more checks in a separate method
@@ -97,7 +115,6 @@ public class createTaskController {
         {
             return;
         }
-        //All fields valid here
 
         Calendar calendar = Calendar.getInstance();
         String desc,category;
@@ -113,10 +130,15 @@ public class createTaskController {
         dueStr = new StringBuilder(yearChoiceBox.getValue() + "-");
         Date dateConverter = new SimpleDateFormat("MMMM", Locale.ENGLISH).parse(monthChoiceBox.getValue());
         calendar.setTime(dateConverter);
-        dueStr.append(calendar.get(Calendar.MONTH));
+        dueStr.append(calendar.get(Calendar.MONTH)+1);//Months are zerod index for some stupid reason
         dueStr.append("-").append(dayChoiceBox.getValue());
-        dueStr.append(" 00:00:00");
+        dueStr.append(" 23:59:59");
         due = Timestamp.valueOf(dueStr.toString());
+
+        if(due.before(created)){
+            dueDateErrorLbl.setVisible(true);
+            return;
+        }
 
         if(category.equals("Default"))
         {
@@ -148,9 +170,6 @@ public class createTaskController {
             taskTxf.setPromptText("TASK NAME ALREADY EXISTS");
             return false;
         }
-
         return true;
     }
-
-
 }

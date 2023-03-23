@@ -17,10 +17,7 @@ import java.io.IOException;
 //reminders
 
 //View and edit tasks
-//Mark as complete
-//Check task is not due in the past
-//number of days in month should depend on selected month in selected year
-//Delete categories
+//Delete categories and tasks
 
 public class startApplication extends Application {
 //    @Override
