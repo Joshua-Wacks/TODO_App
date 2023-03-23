@@ -16,6 +16,7 @@ import java.util.Optional;
 import com.bbd.toDoApp.model.Task;
 import com.bbd.toDoApp.model.User;
 import com.bbd.toDoApp.model.Category;
+import javafx.util.Pair;
 
 /**
  * Connecting to the database.
@@ -49,11 +50,11 @@ public class Connection implements Closeable {
      * @param password the password for the new user
      * @return true if the user was created, and false otherwise
      */
-    public boolean create(User user, String password){
+    public boolean create(User user, String password, String salt){
         try(Statement statement = connection.createStatement()) {
             StringBuilder query = new StringBuilder();
-            query.append(String.format("INSERT INTO %s.%s (Username, User_password)\n", SCHEMA, USER_TABLE));
-            query.append(String.format("VALUES (\"%s\", \"%s\")", user.getUsername(), password));
+            query.append(String.format("INSERT INTO %s.%s (Username, User_password,User_salt)\n", SCHEMA, USER_TABLE));
+            query.append(String.format("VALUES (\"%s\", \"%s\", \"%s\")", user.getUsername(), password,salt));
             statement.execute(query.toString());
             return true;
         } catch (SQLException e) {
@@ -186,7 +187,7 @@ public class Connection implements Closeable {
     }
     public Optional<User> retrieveUser(String username){
         try(Statement statement = connection.createStatement()){
-            String query = String.format("SELECT * FROM %s.%s WHERE %s.Username = %d", SCHEMA, USER_TABLE, USER_TABLE, username);
+            String query = String.format("SELECT * FROM %s.%s WHERE %s.Username = \"%s\"", SCHEMA, USER_TABLE, USER_TABLE, username);
             ResultSet resultSet = statement.executeQuery(query);
             if (resultSet.next())
                 return Optional.of(getUser(resultSet));
@@ -196,12 +197,16 @@ public class Connection implements Closeable {
         }
 
     }
-    public Optional<String> retrieveUserPass(String username){
+    public Optional<Pair<String,String>> retrieveUserPass(String username){
         try(Statement statement = connection.createStatement()){
-            String query = String.format("SELECT Password FROM %s.%s WHERE %s.Username = %d", SCHEMA, USER_TABLE, USER_TABLE, username);
+            String query = String.format("SELECT User_password,User_salt FROM %s.%s WHERE %s.Username = \"%s\"", SCHEMA, USER_TABLE, USER_TABLE, username);
             ResultSet resultSet = statement.executeQuery(query);
             if (resultSet.next())
-                return Optional.of(resultSet.getString("Password"));
+            {
+                Pair<String,String> pair = new Pair<>(resultSet.getString("User_password"),resultSet.getString("User_salt"));
+                return Optional.of(pair);
+
+            }
             return Optional.empty();
         } catch (SQLException e) {
             return Optional.empty();

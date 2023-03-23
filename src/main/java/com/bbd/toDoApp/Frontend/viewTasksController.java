@@ -3,8 +3,7 @@ package com.bbd.toDoApp.Frontend;
 import com.bbd.toDoApp.dbconnection.Connection;
 import com.bbd.toDoApp.model.Category;
 import com.bbd.toDoApp.model.Task;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import com.bbd.toDoApp.model.User;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -19,18 +18,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-<<<<<<< HEAD
-import java.util.stream.Collectors;
-=======
+
 import java.util.regex.Pattern;
->>>>>>> 02b35857271009b71d744f8497765cc9b626a46b
+
 
 //TODO: Add icons to fields
 //TODO: Group tasks by their categories
@@ -49,7 +41,7 @@ import java.util.regex.Pattern;
 public class viewTasksController {
     private static Connection connection;
     private static List<Category> userCategories;
-    private static int userID = 1;//TODO: should be getting this from context
+    private static User user;
     @FXML
     private Button newTaskBtn;
     @FXML
@@ -65,6 +57,7 @@ public class viewTasksController {
 
     @FXML//This method is the equivalent of an onLoad method
     protected void initialize() throws MalformedURLException {
+        user = StateObject.getLoggedInUser();
 
         try {
             connection = new Connection();
@@ -109,7 +102,7 @@ public class viewTasksController {
     }
 
     private void initCategories() {
-        userCategories = connection.retrieveCategoriesFor(userID);
+        userCategories = connection.retrieveCategoriesFor(user.getID());
         userCategories.forEach(category -> {
             try {
                 addCategoryToView(category);
@@ -120,7 +113,7 @@ public class viewTasksController {
     }
 
     private void initTable(){
-        List<Task> userTasks = connection.retrieveTasksFor(userID);
+        List<Task> userTasks = connection.retrieveTasksFor(user.getID());
         for(Task task: userTasks)
         {
             task.setCategory(userCategories.stream().filter(c->c.getID() == task.getCategoryID()).findAny().get().getName());
@@ -157,7 +150,7 @@ public class viewTasksController {
             return;
         }
 
-        Pattern regex = Pattern.compile("[^A-Za-z0-9]");
+        Pattern regex = Pattern.compile("[^A-Za-z0-9\\s]");
         if(regex.matcher(newCat).find()){
             newCategoryTxf.clear();
             newCategoryTxf.setPromptText("No Special Characters Allowed");
@@ -165,9 +158,9 @@ public class viewTasksController {
             return;
         }
         newCategoryTxf.clear();
-
-        persistCategory(newCat);
-        addCategoryToView(newCat);
+        Category category = new Category(newCat,user.getID(),"");
+        persistCategory(category);
+        addCategoryToView(category);
     }
 
     private void handleCategoryButtonThemes(Button btn)
@@ -184,9 +177,9 @@ public class viewTasksController {
     }
 
 
-    private void persistCategory(String newCat)
+    private void persistCategory(Category category)
     {
-        connection.create(new Category(newCat,userID,""));
+        connection.create(category);
     }
     private void addCategoryToView(Category cat) throws MalformedURLException {
         Button newCategoryBtn = new Button(cat.getName());
@@ -199,7 +192,7 @@ public class viewTasksController {
         newCategoryBtn.setMaxWidth(300);
         newCategoryBtn.setOnAction((e)->{
             tasksTbl.getItems().clear();
-            connection.retrieveTasksFor(1)
+            connection.retrieveTasksFor(user.getID())
                       .stream()
                       .filter(task->task.getCategoryID() == cat.getID())
                       .forEach(task->{
@@ -208,7 +201,7 @@ public class viewTasksController {
                       });
         });
         catVBox.getChildren().add(newCategoryBtn);
-//        catScrollPane.setContent(catScrollPane.getContent()+ newCategory);
+
     }
 
 }

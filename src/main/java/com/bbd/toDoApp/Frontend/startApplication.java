@@ -1,6 +1,5 @@
 package com.bbd.toDoApp.Frontend;
 
-import com.bbd.toDoApp.model.User;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -8,6 +7,9 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+
+//TODO:
+
 
 public class startApplication extends Application {
 //    @Override
@@ -19,10 +21,9 @@ public class startApplication extends Application {
 //        stage.show();
 //    }
     private static Scene scene;
-    private static User loggedInUser;
     @Override
     public void start(Stage primaryStage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(startApplication.class.getResource("viewTasks-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(startApplication.class.getResource("login-view.fxml"));
         scene = new Scene(fxmlLoader.load());
         primaryStage.setTitle("ToDo App!");
         primaryStage.setResizable(false);
@@ -36,20 +37,10 @@ public class startApplication extends Application {
 
     }
 
-    static void setRoot(String fxml) throws IOException {
+    public static void setRoot(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(startApplication.class.getResource(fxml));
         scene.setRoot(fxmlLoader.load());
     }
-
-    static void setLoggedInUser(User user){
-        loggedInUser = user;
-    }
-
-    public User getLoggedInUser(){
-        return loggedInUser;
-    }
-
-
     public static void main(String[] args) {
 
         launch();

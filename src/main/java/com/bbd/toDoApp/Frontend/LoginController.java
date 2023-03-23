@@ -3,16 +3,15 @@ package com.bbd.toDoApp.Frontend;
 import com.bbd.toDoApp.dbconnection.Connection;
 import com.bbd.toDoApp.model.User;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
+import javafx.util.Pair;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -34,12 +33,14 @@ public class LoginController {
         //TODO: All the logic for logging a user in
         try {
             Connection conn = new Connection();
-            Optional<String> checkUserPass = conn.retrieveUserPass(usernameTxf.getText());
+            Optional<Pair<String,String>> checkUserPass = conn.retrieveUserPass(usernameTxf.getText());
             if (checkUserPass.isPresent()) {
-                if (encrypt(passwordTxf.getText()).equals(checkUserPass.get())) {
+                String userEnteredPassword = encrypt(passwordTxf.getText(),checkUserPass.get().getValue().getBytes());
+                String storedPassword = checkUserPass.get().getKey();
+                if (userEnteredPassword.equals(storedPassword)) {
                     Optional<User> user = conn.retrieveUser(usernameTxf.getText());
                     if (user.isPresent()) {
-                        startApplication.setLoggedInUser(user.get());
+                        StateObject.setLoggedInUser(user.get());
                         System.out.println("[INFO] User " + user.get().getID() + " logged in...");
                         startApplication.setRoot("viewTasks-view.fxml");
                     }
@@ -66,20 +67,18 @@ public class LoginController {
         startApplication.setRoot("signup-view.fxml");
     }
 
-    private static String encrypt(String input) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        SecureRandom random = new SecureRandom();
-        byte[] salt = new byte[16];
-        random.nextBytes(salt);
+    private static String encrypt(String input,byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
         KeySpec spec = new PBEKeySpec(input.toCharArray(), salt, 65536, 128);
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 
         byte[] hash = factory.generateSecret(spec).getEncoded();
-
         StringBuilder sb = new StringBuilder();
         for (byte b : hash) {
             sb.append(String.format("%02x", b));
         }
+
         return sb.toString();
     }
+
 }
