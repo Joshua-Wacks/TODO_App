@@ -26,6 +26,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 //TODO: Add icons to fields
 //TODO: Group tasks by their categories
@@ -118,11 +119,10 @@ public class viewTasksController {
         List<Task> userTasks = connection.retrieveTasksFor(userID);
         for(Task task: userTasks)
         {
-            task.setCategory(userCategories.stream().filter(c->c.getID() == task.getID()).findAny().get().getName());
+            task.setCategory(userCategories.stream().filter(c->c.getID() == task.getCategoryID()).findAny().get().getName());
             tasksTbl.getItems().add(task);
         }
         tasksTbl.refresh();
-
 
     }
 
@@ -137,17 +137,6 @@ public class viewTasksController {
 
     }
 
-    private String toDate(Timestamp timestamp) {
-        return timestamp.toString().split(" ")[0];
-    }
-//    public void addTaskToTable(Task task)
-//    {
-//        //TODO: Get userID here
-//        Task Task = new Task(ownerID,title,desc,category,toDate(created),toDate(due),"No");
-//        tasksTbl.getItems().add(Task);
-//        tasksTbl.refresh();
-//    }
-
     public void getCategoryToAdd() throws MalformedURLException {
         String newCat = newCategoryTxf.getText();
         if(newCat.equals(""))
@@ -156,8 +145,24 @@ public class viewTasksController {
             newCategoryTxf.setStyle("-fx-prompt-text-fill: red");
             return;
         }
-        //TODO check that cat does not already exist
 
+        if(userCategories.stream().anyMatch(c->c.getName().equals(newCat))){
+            newCategoryTxf.clear();
+            newCategoryTxf.setPromptText("This category already exists");
+            newCategoryTxf.setStyle("-fx-prompt-text-fill: red");
+            return;
+        }
+
+        Pattern regex = Pattern.compile("[^A-Za-z0-9]");
+        if(regex.matcher(newCat).find()){
+            newCategoryTxf.clear();
+            newCategoryTxf.setPromptText("No Special Characters Allowed");
+            newCategoryTxf.setStyle("-fx-prompt-text-fill: red");
+            return;
+        }
+        newCategoryTxf.clear();
+
+        persistCategory(newCat);
         addCategoryToView(newCat);
     }
 
@@ -174,6 +179,10 @@ public class viewTasksController {
         }
     }
 
+    private void persistCategory(String newCat)
+    {
+        connection.create(new Category(newCat,userID,""));
+    }
     private void addCategoryToView(String cat) throws MalformedURLException {
         Button newCategoryBtn = new Button(cat);
         //TODO fix this path
