@@ -1,5 +1,7 @@
 package com.bbd.toDoApp.Frontend;
 
+import com.bbd.toDoApp.dbconnection.Connection;
+import com.bbd.toDoApp.model.User;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -7,6 +9,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+import java.util.Optional;
 
 public class LoginController {
 
@@ -18,19 +25,28 @@ public class LoginController {
     private Text messageDisplay;
 
     @FXML
-    protected void onLoginButtonClick() throws IOException {
+    protected void onLoginButtonClick() throws SQLException, IOException {
         //TODO: All the logic for logging a user in
-        String tempUser = "User";
-        String tempPass = "Password";
-
-        if(usernameTxf.getText().equals(tempUser)){
-            if(passwordTxf.getText().equals(tempPass)){
-                startApplication.setRoot("viewTasks-view.fxml");
+        try {
+            Connection conn = new Connection();
+            Optional<String> checkUserPass = conn.retrieveUserPass(usernameTxf.getText());
+            if (checkUserPass.isPresent()) {
+                if (encrypt(passwordTxf.getText()).equals(checkUserPass.get())) {
+                    Optional<User> user = conn.retrieveUser(usernameTxf.getText());
+                    if (user.isPresent()) {
+                        startApplication.setLoggedInUser(user.get());
+                        System.out.println("[INFO] User " + user.get().getID() + " logged in...");
+                        startApplication.setRoot("viewTasks-view.fxml");
+                    }
+                } else {
+                    messageDisplay.setText("Incorrect Password");
+                }
             } else {
-                messageDisplay.setText("Incorrect Password");
+                messageDisplay.setText("Incorrect Username");
             }
-        } else {
-            messageDisplay.setText("Incorrect Username");
+        } catch (SQLException e){
+            messageDisplay.setText("An error occurred");
+            throw new RuntimeException(e);
         }
     }
 
@@ -39,5 +55,23 @@ public class LoginController {
         //TODO: All the logic for logging a user in
         System.out.println("[INFO] Switching to sign up Screen...");
         startApplication.setRoot("signup-view.fxml");
+    }
+
+    private static String encrypt(String input) {
+        input = input + "salt";
+        byte[] tmp = input.getBytes(StandardCharsets.UTF_8);
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalArgumentException(e);
+        }
+        byte[] result = md.digest(tmp);
+
+        StringBuilder sb = new StringBuilder();
+        for (byte b : result) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
     }
 }
