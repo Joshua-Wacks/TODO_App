@@ -186,7 +186,8 @@ public class viewTasksController {
     private void addCategoryToView(String cat) throws MalformedURLException {
         Button newCategoryBtn = new Button(cat);
         //TODO fix this path
-        File file = new File("C:/Users/bbdnet2493/Documents/grad_projects/Level_ups/Java_level_up/To_do_app_Project/ToDoApp/src/main/resources/StyleSheets/buttonCustomization.css");
+        File file = new File("./src/main/resources/StyleSheets/buttonCustomization.css");
+
         URL url = file.toURI().toURL();
         newCategoryBtn.getStylesheets().add(url.toExternalForm());
         newCategoryBtn.setId("rich-blue");
