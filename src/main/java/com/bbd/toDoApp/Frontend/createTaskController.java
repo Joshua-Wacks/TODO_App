@@ -28,6 +28,7 @@ import java.util.stream.IntStream;
 //TODO: check for special characters
 
 public class createTaskController {
+    boolean debug = true;
     private static Connection connection;
     private static User user;
     private static List<Category> userCategories;
@@ -48,7 +49,14 @@ public class createTaskController {
 
     @FXML//This method is the equivalent of an onLoad method
     protected void initialize() {
-        user = StateObject.getLoggedInUser();
+        if(debug)
+        {
+            user = new User(2,"Test");
+        }
+        else{
+            user = StateObject.getLoggedInUser();
+
+        }
 
         try {
             connection = new Connection();
@@ -60,13 +68,12 @@ public class createTaskController {
         ObservableList<String> categories = FXCollections.observableArrayList();
         userCategories = connection.retrieveCategoriesFor(user.getID());
         userCategories.forEach(c -> categories.add(c.getName()));
-        categoryChoiceBox.setValue(categories.get(0));
+        categoryChoiceBox.setValue("Default");
         categoryChoiceBox.setItems(categories);
 
         int month = calendar.get(Calendar.MONTH) +1;
         int year = calendar.get(Calendar.YEAR);
         YearMonth yearMonthObject = YearMonth.of(year, month );
-
         int daysInMonth = yearMonthObject.lengthOfMonth();
         dayChoiceBox.setValue(calendar.get(Calendar.DAY_OF_MONTH) +"");
         IntStream.rangeClosed(1,daysInMonth).boxed().forEach(x -> dayChoiceBox.getItems().add(x+""));
@@ -90,16 +97,19 @@ public class createTaskController {
         {
             return;
         }
-        //At this point we can assume that all the fields are fulled out correctly
+        //All fields valid here
+
         Calendar calendar = Calendar.getInstance();
         String desc,category;
         StringBuilder dueStr;
-//        String dueStr;
         Timestamp created,due;
+        int catId;
 
         desc = descTxa.getText();
         category = categoryChoiceBox.getValue();
         created = new Timestamp(System.currentTimeMillis());
+
+        //Making the dueDate timestamp
         dueStr = new StringBuilder(yearChoiceBox.getValue() + "-");
         Date dateConverter = new SimpleDateFormat("MMMM", Locale.ENGLISH).parse(monthChoiceBox.getValue());
         calendar.setTime(dateConverter);
@@ -108,13 +118,20 @@ public class createTaskController {
         dueStr.append(" 00:00:00");
         due = Timestamp.valueOf(dueStr.toString());
 
-        int catId = userCategories.stream().filter(c->c.getName().equals(category)).findAny().get().getID();
-        Task task = new Task(user.getID(), title,desc,created,due,catId);
+        if(category.equals("Default"))
+        {
+            catId = 1;
+        }
+        else {
+            catId = userCategories.stream().filter(c->c.getName().equals(category)).findAny().get().getID();
+        }
 
-        connection.create(task);
+        Task task = new Task(user.getID(), title,desc,created,due,catId);
+        connection.create(task);//persist
+
         Stage stage = (Stage) addTaskBtn.getScene().getWindow();
         stage.close();
-        startApplication.setRoot("viewTasks-view.fxml");
+        startApplication.setRoot("viewTasks-view.fxml");//refresh
 
     }
     private Boolean testInputFields(String task)

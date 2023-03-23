@@ -9,7 +9,18 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 //TODO:
+//User info
+//logout
+//change password
 
+//Left pane categories
+//reminders
+
+//View and edit tasks
+//Mark as complete
+//Check task is not due in the past
+//number of days in month should depend on selected month in selected year
+//Delete categories
 
 public class startApplication extends Application {
 //    @Override
@@ -23,7 +34,7 @@ public class startApplication extends Application {
     private static Scene scene;
     @Override
     public void start(Stage primaryStage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(startApplication.class.getResource("login-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(startApplication.class.getResource("viewTasks-view.fxml"));
         scene = new Scene(fxmlLoader.load());
         primaryStage.setTitle("ToDo App!");
         primaryStage.setResizable(false);

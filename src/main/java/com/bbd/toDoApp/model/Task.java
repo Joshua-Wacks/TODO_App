@@ -51,6 +51,7 @@ public class Task {
     public String getDescription() { return description;}
     public boolean isCompleted() { return completed;}
     public int getCategoryID() { return categoryID;}
+    public void setCompleted(boolean completed){this.completed = completed;}
     public void markAsCompleted() { completed = true;}
     public void setTitle(String title){ this.title = title;}
     public void setDueDate(Timestamp date) { dueDate = date;}

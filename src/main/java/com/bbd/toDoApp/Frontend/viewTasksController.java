@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
@@ -39,6 +40,7 @@ import java.util.regex.Pattern;
 //TODO: add default categories for each user
 
 public class viewTasksController {
+    boolean debug = true;
     private static Connection connection;
     private static List<Category> userCategories;
     private static User user;
@@ -57,7 +59,14 @@ public class viewTasksController {
 
     @FXML//This method is the equivalent of an onLoad method
     protected void initialize() throws MalformedURLException {
-        user = StateObject.getLoggedInUser();
+        if(debug)
+        {
+            user = new User(2,"Test");
+        }
+        else{
+            user = StateObject.getLoggedInUser();
+
+        }
 
         try {
             connection = new Connection();
@@ -96,8 +105,9 @@ public class viewTasksController {
         dueColumn.setCellValueFactory(new PropertyValueFactory<Task,String>("dueDateStr"));
         tasksTbl.getColumns().add(dueColumn);
 
-        TableColumn<Task,Boolean> completedColumn = new TableColumn<>("Completed");
-        completedColumn.setCellValueFactory(new PropertyValueFactory<Task,Boolean>("completed"));
+        TableColumn<Task,CheckBox> completedColumn = new TableColumn<>("Completed");
+        completedColumn.setCellValueFactory(new PropertyValueFactory<Task,CheckBox>("completed"));
+        completedColumn.setCellValueFactory( new taskCompletedValueFactory());
         tasksTbl.getColumns().add(completedColumn);
     }
 
@@ -116,7 +126,12 @@ public class viewTasksController {
         List<Task> userTasks = connection.retrieveTasksFor(user.getID());
         for(Task task: userTasks)
         {
-            task.setCategory(userCategories.stream().filter(c->c.getID() == task.getCategoryID()).findAny().get().getName());
+            if(task.getCategoryID() == 1)//Dealing with the default category
+            {
+                task.setCategory("");
+            }else{
+                task.setCategory(userCategories.stream().filter(c->c.getID() == task.getCategoryID()).findAny().get().getName());
+            }
             tasksTbl.getItems().add(task);
         }
         tasksTbl.refresh();
