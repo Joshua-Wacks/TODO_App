@@ -16,7 +16,9 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -272,5 +274,14 @@ public class viewTasksController {
     }
 
     public static Task getRowSelected(){return rowSelected;}
+
+    private void logout() throws IOException {
+        String path = System.getProperty("user.home") + "\\AppData\\Roaming\\ToDo\\user.txt";
+        BufferedWriter writer = new BufferedWriter(new FileWriter(path));
+        writer.write("");
+        writer.close();
+
+        startApplication.setRoot("login-view.fxml");
+    }
 
 }

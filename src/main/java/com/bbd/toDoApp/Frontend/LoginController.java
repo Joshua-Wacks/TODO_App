@@ -10,7 +10,8 @@ import javafx.util.Pair;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import java.io.IOException;
+import java.io.*;
+import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -28,6 +29,33 @@ public class LoginController {
     @FXML
     private Text messageDisplay;
 
+    protected void initialize() throws IOException, SQLException {
+        String path = System.getProperty("user.home") + "\\AppData\\Roaming";
+
+        File newDirectory = new File(path, "ToDo");
+        if (newDirectory.exists()) {
+            path = System.getProperty("user.home") + "\\AppData\\Roaming\\ToDo\\user.txt";
+            BufferedReader reader = new BufferedReader(new FileReader(path));
+            String line = reader.readLine();
+            if(line != null) {
+                Connection conn = new Connection();
+                Optional<User> user = conn.retrieveUser(line);
+                if (user.isPresent()) {
+                    StateObject.setLoggedInUser(user.get());
+                    System.out.println("[INFO] User " + user.get().getID() + " logged in...");
+                    startApplication.setRoot("viewTasks-view.fxml");
+                }
+            }
+            reader.close();
+        } else {
+            newDirectory.mkdir();
+            path = System.getProperty("user.home") + "\\AppData\\Roaming\\ToDo\\user.txt";
+            BufferedWriter writer = new BufferedWriter(new FileWriter(path));
+            writer.write("");
+            writer.close();
+        }
+    }
+
     @FXML
     protected void onLoginButtonClick() throws SQLException, IOException {
         //TODO: All the logic for logging a user in
@@ -42,6 +70,12 @@ public class LoginController {
                     if (user.isPresent()) {
                         StateObject.setLoggedInUser(user.get());
                         System.out.println("[INFO] User " + user.get().getID() + " logged in...");
+
+                        String path = System.getProperty("user.home") + "\\AppData\\Roaming\\ToDo\\user.txt";
+                        BufferedWriter writer = new BufferedWriter(new FileWriter(path));
+                        writer.write(user.get().getUsername());
+                        writer.close();
+
                         startApplication.setRoot("viewTasks-view.fxml");
                     }
                 } else {

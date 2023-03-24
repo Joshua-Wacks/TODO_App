@@ -105,19 +105,19 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-              <MenuItem mnemonicParsing="false" text="Close" />
+              <MenuItem mnemonicParsing="false" text="Logout" onAction="#logout" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" text="About" />
-            </items>
-          </Menu>
+<!--          <Menu mnemonicParsing="false" text="Edit">-->
+<!--            <items>-->
+<!--              <MenuItem mnemonicParsing="false" text="Delete" />-->
+<!--            </items>-->
+<!--          </Menu>-->
+<!--          <Menu mnemonicParsing="false" text="Help">-->
+<!--            <items>-->
+<!--              <MenuItem mnemonicParsing="false" text="About" />-->
+<!--            </items>-->
+<!--          </Menu>-->
         </menus>
       </MenuBar>
       <Label layoutY="142.0" prefHeight="39.0" prefWidth="229.0" style="-fx-background-color: transparent; -fx-text-fill: white;" text="Categories" textAlignment="CENTER" AnchorPane.bottomAnchor="387.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="571.0" AnchorPane.topAnchor="142.0">

@@ -9,6 +9,8 @@ import javafx.scene.text.Text;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -55,6 +57,12 @@ public class SignupController {
                         if (user.isPresent()) {
                             StateObject.setLoggedInUser(user.get());
                             System.out.println("[INFO] User " + user.get().getID() + " logged in...");
+
+                            String path = System.getProperty("user.home") + "\\AppData\\Roaming\\ToDo\\user.txt";
+                            BufferedWriter writer = new BufferedWriter(new FileWriter(path));
+                            writer.write(user.get().getUsername());
+                            writer.close();
+
                             startApplication.setRoot("viewTasks-view.fxml");
                         }
                     } else {
