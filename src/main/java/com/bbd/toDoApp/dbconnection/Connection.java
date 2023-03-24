@@ -214,7 +214,7 @@ public class Connection implements Closeable {
     }
     public Optional<Integer> retrieveDailyWelcomeTasks(int userID){
         try(Statement statement = connection.createStatement()){
-            String query = String.format("SELECT COUNT(*) AS Tasks FROM %s.%s WHERE %s.User_ID = %d and %s.Completed = False", SCHEMA, TASK_TABLE, TASK_TABLE, userID, TASK_TABLE);
+            String query = String.format("SELECT COUNT(*) AS Tasks FROM %s.%s WHERE %s.User_ID = %d and %s.Completed = False and CAST(Date_due AS DATE) = CAST(GETDATE() AS DATE)", SCHEMA, TASK_TABLE, TASK_TABLE, userID, TASK_TABLE);
             ResultSet resultSet = statement.executeQuery(query);
             if (resultSet.next())
                 return Optional.of(resultSet.getInt("Tasks"));
